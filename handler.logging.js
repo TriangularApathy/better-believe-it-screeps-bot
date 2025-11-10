@@ -3,8 +3,8 @@ const LOG_TYPE = {
     WARNING: '#e65c00',
     REGULAR: '#c7c7c7',
     TRIVIAL: '#999999',
-    INFORMATION: '#809fff',
-    SUCCESS: '#93ff80ff',
+    INFORMATION: '#7b9bfdff',
+    SUCCESS: '#33ff0041',
     ALERT: '#ffff00'
 }
 
