@@ -1,5 +1,5 @@
 module.exports.loop = function () {
-    // -------------------- Start Module Imports --------------------
+	// -------------------- Start Module Imports --------------------
 
 	// Import jobs
 	var job_Harvester = require('job.harvester');
@@ -9,19 +9,19 @@ module.exports.loop = function () {
 
 	// Import logic
 	const { LOG_TYPE, writeLog } = require('./handler.logging');
+	const { initializeRoom } = require('./handler.rooms');
 	var handler_JobCost = require('handler.job-cost');
-	var handler_Spawns = require('handler.spawns');
+	const { handler_Spawning } = require('./handler.spawning');
 	const { manageCreepQueue, manageBuildingQueue } = require('./handler.queue');
 
 	// --------------------- End Module Imports ---------------------
+
+	writeLog('===================== STARTING MAIN LOOP =====================', LOG_TYPE.TRIVIAL);
 
 	// ------------------- Start Global Variables -------------------
 	
 	// Define current room
 	var currentRoom = "W9N6";
-
-	// Define available haresting spots
-	
 
 	// Define allies
 	Memory.allies = [
@@ -179,6 +179,33 @@ module.exports.loop = function () {
 
 	// -------------------- End Global Variables --------------------
 
+	// ---------------------- Start Room MGMT -----------------------
+
+	writeLog('------------------ Starting Room Management ------------------', LOG_TYPE.TRIVIAL);
+
+	// Check if room memory exists, if not initialize it
+	if (!Memory.rooms) { 
+		writeLog(`Initializing room memory`, LOG_TYPE.INFORMATION);
+		Memory.rooms = []; 
+	}
+
+	// Get all spawns
+	let spawns = Game.spawns;
+
+	// Check to see if spawner rooms exist in memory, if not initialize it
+	for (let spawn in spawns) {
+		let roomName = spawns[spawn].room.name;
+		if (!Memory.rooms.find(room => room.roomName === roomName)) {
+			writeLog(`Initializing room [${roomName}]`, LOG_TYPE.INFORMATION);
+			initializeRoom(roomName);
+		}
+		else { writeLog(`Room [${roomName}] already initialized`, LOG_TYPE.REGULAR); }
+	}
+
+	writeLog('------------------ Finished Room Management ------------------\n\n', LOG_TYPE.TRIVIAL);
+
+	// ----------------------- End Room MGMT ------------------------
+
 	// ---------------------- Start Tier MGMT -----------------------
 
 	// Define current controller tier
@@ -289,4 +316,6 @@ module.exports.loop = function () {
 			}
 		}
     }
+
+	writeLog('===================== FINISHED MAIN LOOP =====================\n\n', LOG_TYPE.TRIVIAL);
 }
