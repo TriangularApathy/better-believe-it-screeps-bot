@@ -76,107 +76,6 @@ module.exports.loop = function () {
 		
 	];
 
-	// Define tier system
-	var tiers = [
-		{
-			level: 0,
-			jobs: [{}],
-			buildings: [{}]
-		},
-		{
-			level: 1,
-			jobs: [
-				{
-					// Used to harvest resources
-					jobTitle: 'Harvester',
-					qtyNeeded: Game.rooms[currentRoom].find(FIND_SOURCES).length * 2,
-					importance: 1.0,
-					bodyParts: [
-						WORK, CARRY, CARRY, MOVE, MOVE
-					]
-				},
-				{
-					// Used to upgrade controller
-					jobTitle: 'Upgrader',
-					qtyNeeded: 1,
-					importance: 0.9,
-					bodyParts: [
-						WORK, CARRY, CARRY, MOVE, MOVE
-					]
-				}
-			],
-			buildings: [{}]
-		},
-		{
-			level: 2,
-			jobs: [
-				{
-					// Better for when containers are being used
-					jobTitle: 'Harvester',
-					qtyNeeded: Game.rooms[currentRoom].find(FIND_SOURCES).length * 4,
-					importance: 1.0,
-					bodyParts: [
-						WORK, CARRY, CARRY, CARRY, MOVE
-					]
-				},
-				{
-					// Better for when containers are being used
-					jobTitle: 'Upgrader',
-					qtyNeeded: 3,
-					importance: 0.8,
-					bodyParts: [
-						WORK, CARRY, CARRY, CARRY, MOVE
-					]
-				},
-				{
-					// Builds structures
-					jobTitle: 'Builder',
-					qtyNeeded: 2,
-					importance: 0.9,
-					bodyParts: [
-						WORK, CARRY, CARRY, MOVE, MOVE
-					]
-				},
-				{
-					// Transfers energy between containers and structures
-					jobTitle: 'Courier',
-					qtyNeeded: Game.rooms[currentRoom].find(FIND_SOURCES).length + 1,
-					importance: 0.7,
-					bodyParts: [
-						CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE
-					]
-				},
-				{
-					// Protects colony
-					jobTitle: 'Guard',
-					qtyNeeded: 3,
-					importance: 0.6,
-					bodyParts: [
-						TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE
-					]
-				}
-			],
-			buildings: [
-				{
-					buildingName: 'Container',
-					qtyMax: 5
-				},
-				{
-					buildingName: 'Extension',
-					qtyMax: 5
-				},
-				{
-					buildingName: 'Wall',
-					qtyMax: undefined
-				},
-				{
-					buildingName: 'Rampart',
-					qtyMax: undefined
-				}
-			]
-		}
-	];
-
 	// -------------------- End Global Variables --------------------
 
 	// ---------------------- Start Room MGMT -----------------------
@@ -196,10 +95,10 @@ module.exports.loop = function () {
 	for (let spawn in spawns) {
 		let roomName = spawns[spawn].room.name;
 		if (!Memory.rooms.find(room => room.roomName === roomName)) {
-			writeLog(`Initializing room [${roomName}]`, LOG_TYPE.INFORMATION);
+			writeLog(`[${roomName}] Initializing room`, LOG_TYPE.INFORMATION);
 			initializeRoom(roomName);
 		}
-		else { writeLog(`Room [${roomName}] already initialized`, LOG_TYPE.REGULAR); }
+		else { writeLog(`[${roomName}] Room already initialized`, LOG_TYPE.REGULAR); }
 	}
 
 	writeLog('------------------ Finished Room Management ------------------\n\n', LOG_TYPE.TRIVIAL);
@@ -208,25 +107,39 @@ module.exports.loop = function () {
 
 	// ---------------------- Start Tier MGMT -----------------------
 
-	// Define current controller tier
-	var startingTier = Game.rooms[currentRoom].controller.level;
-	var operatingTier = startingTier;
-	writeLog(`Current tier: [${operatingTier}]`);
-	
-	// Check if current tier has been set up and run at lower tier if not
-	for (let tier in tiers) {
-		if (tiers[operatingTier]) { break; }
-		else {
-			writeLog('Tier has not been defined. Checking next tier...', LOG_TYPE.WARNING);
-			operatingTier--;
+	writeLog('------------------ Starting Tier Management ------------------', LOG_TYPE.TRIVIAL);
+
+	// Loop through rooms to update tiers as needed
+	for (let room of Memory.rooms) {
+		let roomName = room.roomName;
+		writeLog(`[${roomName}] Checking tier details...`, LOG_TYPE.INFORMATION);
+
+		// Define current controller tier
+		var startingTier = Game.rooms[roomName].controller.level;
+		var operatingTier = startingTier;
+		writeLog(`[${roomName}] Current tier: [${operatingTier}]`);
+
+		// Check if current tier has been set up and run at lower tier if not
+		let tiers = room.roomData.tiers;
+		for (let tier in tiers) {
+			if (tiers[operatingTier]) { break; }
+			else {
+				writeLog(`[${roomName}] Tier has not been defined. Checking next tier...`, LOG_TYPE.WARNING);
+				operatingTier--;
+			}
 		}
+		
+		if( startingTier - operatingTier > 1) { writeLog(`[${roomName}] Currently operating [${startingTier - operatingTier}] tiers lower`, LOG_TYPE.ALERT) }
+		else { writeLog(`[${roomName}] Currently operating [${startingTier - operatingTier}] tier lower`, LOG_TYPE.ALERT) }
+
+		// Update tier information in memory
+		room.currentTier = startingTier;
+		room.operatingTier = operatingTier;
+
+		writeLog(`[${roomName}] Tiers updated`, LOG_TYPE.SUCCESS);
 	}
 	
-	if( startingTier - operatingTier > 1) { writeLog(`Currently operating [${startingTier - operatingTier}] tiers lower`, LOG_TYPE.ALERT) }
-	else { writeLog(`Currently operating [${startingTier - operatingTier}] tier lower`, LOG_TYPE.ALERT) }
-	
-	// Save job list to variable
-	var jobList = tiers[operatingTier].jobs;
+	writeLog('------------------ Finished Tier Management ------------------\n\n', LOG_TYPE.TRIVIAL);
 
 	// ----------------------- End Tier MGMT ------------------------
 
@@ -248,7 +161,7 @@ module.exports.loop = function () {
 
 	// --------------------- Start Queue MGMT -----------------------
 
-	manageCreepQueue(jobList);
+	//manageCreepQueue(jobList);
 	//manageBuildingQueue(buildingList);
 
 	// ---------------------- End Queue MGMT ------------------------
