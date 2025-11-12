@@ -49,6 +49,10 @@ function initializeRoom(roomName) {
         roomData: {
             creeps: [],
             buildings: [],
+            queues: {
+                creepQueue: [],
+                buildingQueue: []
+            },
             sources: [],
             minerals: [],
             // Tiers allow for scaling of jobs and buildings as controller levels increase
