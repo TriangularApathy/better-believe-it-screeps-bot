@@ -18,6 +18,22 @@ module.exports.loop = function () {
 
 	writeLog('===================== STARTING MAIN LOOP =====================', LOG_TYPE.TRIVIAL);
 
+	// ----------------------- Start Cleanup ------------------------
+	
+	writeLog('---------------------- Starting Cleanup ----------------------', LOG_TYPE.TRIVIAL);
+
+	// Remove dead creeps from memory
+	for(let name in Memory.creeps) {
+		if(!Game.creeps[name]) {
+			delete Memory.creeps[name];
+			writeLog(`Rip in pieces [${name}]`);
+		}
+	}
+
+	writeLog('---------------------- Finished Cleanup ----------------------\n\n', LOG_TYPE.TRIVIAL);
+
+	// ------------------------ End Cleanup -------------------------
+
 	// ------------------- Start Global Variables -------------------
 	
 	// Define current room
@@ -55,7 +71,7 @@ module.exports.loop = function () {
 			// Guards defend the base
 			jobTitle: "Guard",
 			minQty: 0,
-			maxQty: 5,
+			maxQty: 0,
 			current: undefined,
 			importance: 0.5,
 			bodyParts: [
@@ -65,8 +81,8 @@ module.exports.loop = function () {
 		{
 			// Guards defend the base
 			jobTitle: "Upgrader",
-			minQty: 1,
-			maxQty: 2,
+			minQty: 0,
+			maxQty: 3,
 			current: undefined,
 			importance: 0.2,
 			bodyParts: [
@@ -81,6 +97,9 @@ module.exports.loop = function () {
 	// ---------------------- Start Room MGMT -----------------------
 
 	writeLog('------------------ Starting Room Management ------------------', LOG_TYPE.TRIVIAL);
+
+	// FOR TESTING MEMORY ISSUES
+	//delete Memory.rooms;
 
 	// Check if room memory exists, if not initialize it
 	if (!Memory.rooms) { 
@@ -105,13 +124,16 @@ module.exports.loop = function () {
 
 	// ----------------------- End Room MGMT ------------------------
 
-	// ---------------------- Start Tier MGMT -----------------------
-
-	writeLog('------------------ Starting Tier Management ------------------', LOG_TYPE.TRIVIAL);
-
-	// Loop through rooms to update tiers as needed
+	// Perform actions on each room
 	for (let room of Memory.rooms) {
 		let roomName = room.roomName;
+
+		// ---------------------- Start Tier MGMT -----------------------
+
+		writeLog('-------------------- Starting Room Actions -------------------', LOG_TYPE.TRIVIAL);
+		writeLog('------------------ Starting Tier Management ------------------', LOG_TYPE.TRIVIAL);
+
+		// Loop through rooms to update tiers as needed
 		writeLog(`[${roomName}] Checking tier details...`, LOG_TYPE.INFORMATION);
 
 		// Define current controller tier
@@ -137,34 +159,30 @@ module.exports.loop = function () {
 		room.operatingTier = operatingTier;
 
 		writeLog(`[${roomName}] Tiers updated`, LOG_TYPE.SUCCESS);
-	}
-	
-	writeLog('------------------ Finished Tier Management ------------------\n\n', LOG_TYPE.TRIVIAL);
 
-	// ----------------------- End Tier MGMT ------------------------
+		writeLog('------------------ Finished Tier Management ------------------\n\n', LOG_TYPE.TRIVIAL);
+
+		// ----------------------- End Tier MGMT ------------------------
+
+		// --------------------- Start Queue MGMT -----------------------
+
+		writeLog('-------------------- Starting Queue MGMT ---------------------', LOG_TYPE.TRIVIAL);
+
+		manageCreepQueue(roomName);
+		//manageBuildingQueue(roomName);
+
+		
+		writeLog('-------------------- Finished Queue MGMT ---------------------\n\n', LOG_TYPE.TRIVIAL);
+
+		// ---------------------- End Queue MGMT ------------------------
+		
+		writeLog('-------------------- Finished Room Actions -------------------\n\n', LOG_TYPE.TRIVIAL);
+	}
 
 	// Save operating tier, job list, and structure list to memory
 	//Memory.operatingTier = operatingTier;
 	//Memory.jobList = tiers[operatingTier].jobs;
 	//Memory.structureList = tiers[operatingTier].buildings;
-
-	// ----------------------- Start Cleanup ------------------------
-	
-	// Remove dead creeps from memory
-	for(let name in Memory.creeps) {
-		if(!Game.creeps[name]) {
-			delete Memory.creeps[name];
-		}
-	}
-
-	// ------------------------ End Cleanup -------------------------
-
-	// --------------------- Start Queue MGMT -----------------------
-
-	//manageCreepQueue(jobList);
-	//manageBuildingQueue(buildingList);
-
-	// ---------------------- End Queue MGMT ------------------------
 
 	// Get count of each job
 	for (var job in jobs) {
