@@ -1,19 +1,24 @@
 const { writeLog, LOG_TYPE } = require("./handler.logging");
 
-// Manages the global queue of creep production
+// Manages the room queue for creep production
 /** 
- * @param {array} jobList
+ * @param {string} roomName
 **/
-function manageCreepQueue(jobList) {
-    writeLog('-------------- CREEP QUEUE MGMT --------------', LOG_TYPE.TRIVIAL);
+function manageCreepQueue(roomName) {
+    writeLog('------------------ Starting Creep Queue mgmt -----------------', LOG_TYPE.TRIVIAL);
+
+    //Memory.rooms[0].roomData.queues.creepQueue = [];
 
     // Get current queue from memory
-    var creepQueue = Memory.creepQueue;
-    if (creepQueue === undefined) {
-        creepQueue = [];
-    }
+    let roomIndex = Memory.rooms.findIndex(room => room.roomName === roomName);
+    var roomObject = Memory.rooms[roomIndex];
+    let creepQueue = roomObject.roomData.queues.creepQueue;
+    writeLog(`[${roomName}] Creep Queue: [${creepQueue}]`, LOG_TYPE.REGULAR);
 
-    writeLog(`Current Queue: ${creepQueue}`, LOG_TYPE.INFORMATION);
+    // Get list of jobs based on operating room tier
+    let operatingTier = roomObject.operatingTier;
+    let jobList = roomObject.roomData.tiers[operatingTier].jobs;
+    writeLog(`[${roomName}] Jobs being managed for this tier: [${jobList.length}]`);
 
     // Sort jobs by importance
     jobList = jobList.sort((a, b) => b.importance - a.importance);
@@ -22,32 +27,28 @@ function manageCreepQueue(jobList) {
 	for (let job in jobList) {
 		// Get count of each job
         let jobTitle = jobList[job].jobTitle;
-        let currentCount = _.filter(Game.creeps, { memory: { job: jobTitle}}).length;
+        let currentCount = _.filter(Game.creeps, { memory: { job: jobTitle}}).length; // Should go off of room memory instead
         let qtyNeeded = jobList[job].qtyNeeded;
-        let jobsInQueue = 0;
-
-        try {
-            jobsInQueue = creepQueue.filter(job => job == jobTitle).length;
-        }   catch (error) { 
-            writeLog(`Unable to filter job list: ${error}`, LOG_TYPE.ERROR);
-        }
-        
-        writeLog(`Job: [${jobTitle}] | ${currentCount}+${jobsInQueue}/${qtyNeeded}`, LOG_TYPE.REGULAR);
+        let jobsInQueue = creepQueue.filter(job => job == jobTitle).length;        
+        writeLog(`[${roomName}] Job: [${jobTitle}] | ${currentCount}+${jobsInQueue}/${qtyNeeded}`, LOG_TYPE.REGULAR);
         
         // Check how many jobs need to be filled
         let plannedJobs = currentCount + jobsInQueue;
         if (plannedJobs < qtyNeeded) {
             for (let i = plannedJobs; i < qtyNeeded; i++) {
-                writeLog(`Adding [${jobTitle}] to queue...`, LOG_TYPE.SUCCESS);
+                writeLog(`[${roomName}] Adding [${jobTitle}] to queue...`, LOG_TYPE.INFORMATION);
                 creepQueue.push(jobTitle);
             }
         }
 	}
 
-    // Write new queue to memory
-    Memory.creepQueue = creepQueue;
-    writeLog(`Updated Queue: ${creepQueue}`, LOG_TYPE.INFORMATION);
-    writeLog('------------ END CREEP QUEUE MGMT ------------\n\n', LOG_TYPE.TRIVIAL);
+    writeLog(`[${roomName}] Updated Queue: [${creepQueue}]`, LOG_TYPE.REGULAR);
+
+    // Update queue in memory
+    Memory.rooms[roomIndex].roomData.queues.creepQueue = creepQueue;
+    writeLog(`[${roomName}] Creep Queue has been updated in memory`, LOG_TYPE.SUCCESS);
+
+    writeLog('------------------ Finished Creep Queue mgmt -----------------\n\n', LOG_TYPE.TRIVIAL);
 }
 
 // Manages the global queue of building production
