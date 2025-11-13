@@ -138,19 +138,23 @@ function initializeRoom(roomName) {
                     buildings: [
                         {
                             buildingName: 'Container',
-                            qtyMax: 5
+                            qtyMax: 5,
+                            importance: 1.0
                         },
                         {
                             buildingName: 'Extension',
-                            qtyMax: 5
+                            qtyMax: 5,
+                            importance: 0.8
                         },
                         {
                             buildingName: 'Wall',
-                            qtyMax: undefined
+                            qtyMax: undefined,
+                            importance: 0.5
                         },
                         {
                             buildingName: 'Rampart',
-                            qtyMax: undefined
+                            qtyMax: undefined,
+                            importance: 0.4
                         }
                     ]
                 }
