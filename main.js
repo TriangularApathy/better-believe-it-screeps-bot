@@ -9,6 +9,7 @@ module.exports.loop = function () {
 
 	// Import logic
 	const { LOG_TYPE, writeLog } = require('./handler.logging');
+	const { tierList } = require('./tiers');
 	const { initializeRoom } = require('./handler.rooms');
 	var handler_JobCost = require('handler.job-cost');
 	const { handler_Spawning } = require('./handler.spawning');
@@ -158,6 +159,9 @@ module.exports.loop = function () {
 		room.currentTier = startingTier;
 		room.operatingTier = operatingTier;
 
+		// Grab newest version of tier array
+		room.roomData.tiers = tierList;
+
 		writeLog(`[${roomName}] Tiers updated`, LOG_TYPE.SUCCESS);
 
 		writeLog('------------------ Finished Tier Management ------------------\n\n', LOG_TYPE.TRIVIAL);
@@ -169,7 +173,7 @@ module.exports.loop = function () {
 		writeLog('-------------------- Starting Queue MGMT ---------------------', LOG_TYPE.TRIVIAL);
 
 		manageCreepQueue(roomName);
-		//manageBuildingQueue(roomName);
+		manageBuildingQueue(roomName);
 
 		
 		writeLog('-------------------- Finished Queue MGMT ---------------------\n\n', LOG_TYPE.TRIVIAL);
