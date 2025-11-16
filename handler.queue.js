@@ -1,4 +1,3 @@
-const { isEmpty } = require("lodash");
 const { writeLog, LOG_TYPE } = require("./handler.logging");
 
 // Gets room queue details
@@ -10,7 +9,7 @@ const { writeLog, LOG_TYPE } = require("./handler.logging");
 function getQueueDetails(roomName, queueType) {
     // Get room data from memory
     let roomIndex = Memory.rooms.findIndex(room => room.roomName === roomName);
-    var roomObject = Memory.rooms[roomIndex];
+    let roomObject = Memory.rooms[roomIndex];
     let operatingTier = roomObject.operatingTier;
     let queue = [];
     let list = [];
@@ -103,16 +102,17 @@ function manageBuildingQueue(roomName) {
 
     // Add missing buildings to queue
     for (let building in buildingList) {
-		// Get count of each job
+		// Get count of each building
         let buildingName = buildingList[building].buildingName;
         let qtyMax = buildingList[building].qtyMax;
-
         let currentCount = Game.rooms[roomName].find(FIND_MY_STRUCTURES).filter(structure => structure.structureType === buildingName).length;
         let constructionSites = Game.rooms[roomName].find(FIND_MY_CONSTRUCTION_SITES).filter(site => site.structureType === buildingName).length;
         let buildingsInQueue = buildingQueue.filter(structure => structure === buildingName).length;
 
+        // Handle buildings with undefined/unlimited placement
         if (!qtyMax) {
             writeLog(`[${roomName}] Building: [${buildingName}] | ${currentCount}+${constructionSites}+${buildingsInQueue}`);
+            qtyMax = -1;
         }   else { writeLog(`[${roomName}] Building: [${buildingName}] | ${currentCount}+${constructionSites}+${buildingsInQueue}/${qtyMax}`, LOG_TYPE.REGULAR); }
         
         // Check how many jobs need to be filled
