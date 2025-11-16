@@ -1,19 +1,19 @@
-// Handles the spawning of different creeps based on the creep queue
-/** 
- * @param {string} roomName
-**/
-function spawnCreeps(roomName) {
-    // Get spawns in room from memory
-    var roomSpawns = Memory.rooms[roomName].spawns;
+const { writeLog, LOG_TYPE } = require("./handler.logging");
 
-    // Each spawn can produce a single creep
-    for (let spawn in roomSpawns) {
+// Description of function
+/**
+ * @param {string} roomName - Name of room to spawn creeps for
+ */
+function spawnCreeps (roomName) {
+    // Get room index, data, and queue from memory
+    let roomIndex = Memory.rooms.findIndex(room => room.roomName === roomName);
+    let roomObject = Memory.rooms[roomIndex];
+    let queue = roomObject.roomData.queues.creepQueue;
 
-    }
-    
-    
+    // Each spawn in room can produce a single creep
+    // Look for energy from extensions?
 }
 
-exports.module = {
+module.exports = {
     spawnCreeps
-}
+};

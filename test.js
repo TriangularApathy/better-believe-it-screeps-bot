@@ -1,149 +1,32 @@
-var tiers = [
-    {
-        level: 0,
-        jobs: [{}],
-        buildings: [{}]
-    },
-    {
-        level: 1,
-        jobs: [
-            {
-                // Used to harvest resources
-                jobName: 'Harvester',
-                qtyNeeded: Game.rooms[currentRoom].find(FIND_SOURCES).length * 2,
-                importance: 1.0,
-                bodyParts: [
-                    WORK, CARRY, CARRY, MOVE, MOVE
-                ]
-            },
-            {
-                // Used to upgrade controller
-                jobName: 'Upgrader',
-                qtyNeeded: 1,
-                importance: 0.9,
-                bodyParts: [
-                    WORK, CARRY, CARRY, MOVE, MOVE
-                ]
-            }
-        ],
-        buildings: [{}]
-    },
-    {
-        level: 2,
-        jobs: [
-            {
-                // Better for when containers are being used
-                jobName: 'Harvester',
-                qtyNeeded: Game.rooms[currentRoom].find(FIND_SOURCES).length * 4,
-                importance: 1.0,
-                bodyParts: [
-                    WORK, CARRY, CARRY, CARRY, MOVE
-                ]
-            },
-            {
-                // Better for when containers are being used
-                jobName: 'Upgrader',
-                qtyNeeded: 3,
-                importance: 0.8,
-                bodyParts: [
-                    WORK, CARRY, CARRY, CARRY, MOVE
-                ]
-            },
-            {
-                // Builds structures
-                jobName: 'Builder',
-                qtyNeeded: 2,
-                importance: 0.9,
-                bodyParts: [
-                    WORK, CARRY, CARRY, MOVE, MOVE
-                ]
-            },
-            {
-                // Transfers energy between containers and structures
-                jobName: 'Courier',
-                qtyNeeded: Game.rooms[currentRoom].find(FIND_SOURCES).length + 1,
-                importance: 0.7,
-                bodyParts: [
-                    CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE
-                ]
-            },
-            {
-                // Protects colony
-                jobName: 'Guard',
-                qtyNeeded: 3,
-                importance: 0.6,
-                bodyParts: [
-                    TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE
-                ]
-            }
-        ],
-        buildings: [
-            {
-                buildingName: 'Container',
-                qtyMax: 5
-            },
-            {
-                buildingName: 'Extension',
-                qtyMax: 5
-            },
-            {
-                buildingName: 'Wall',
-                qtyMax: undefined
-            },
-            {
-                buildingName: 'Rampart',
-                qtyMax: undefined
-            }
-        ]
-    }
-];
+// Which buildings are added for each tier
+switch (currentTier) {
+    case 0: // Roads, 5 Containers
+        
+        break;
+    case 1: // 1 Spawn
 
-var jobs = [
-    {
-        // Harvesters used to gather materials
-        jobTitle: "Harvester",
-        tiers: [
-            {
-                level: 1,
+        break;
+    case 2: // 5 Extensions (50 capacity), Ramparts (300K max hits), Walls
 
+        break;
+    case 3: // 10 Extensions (50 capacity), Ramparts (1M max hits), 1 Tower
 
-            },
-            {
-                2: {
-                    
-                }
-            }
-        ],
-        minQty: 2,
-        maxQty: 8,
-        current: undefined,
-        importance: .1,
-        bodyParts: [
-            WORK, CARRY, CARRY, MOVE, MOVE
-        ],
-        cost: undefined
-    },
-    {
-        // Guards defend the base
-        jobTitle: "Guard",
-        minQty: 0,
-        maxQty: 5,
-        current: undefined,
-        importance: 0.5,
-        bodyParts: [
-            MOVE, MOVE, ATTACK, ATTACK, TOUGH, TOUGH, TOUGH, TOUGH
-        ]
-    },
-    {
-        // Guards defend the base
-        jobTitle: "Upgrader",
-        minQty: 1,
-        maxQty: 2,
-        current: undefined,
-        importance: 0.2,
-        bodyParts: [
-            WORK, CARRY, CARRY, MOVE, MOVE
-        ]
-    }
-    
-];
+        break;
+    case 4: // 20 Extensions (50 capacity), Ramparts (3M max hits), Storage
+
+        break;
+    case 5: // 30 Extensions (50 capacity), Ramparts (10M max hits), 2 Towers, Storage, 2 Links
+
+        break;
+    case 6: // 40 Extensions (50 capacity), Ramparts (30M max hits), 3 Links, Extractor, 3 Labs, Terminal
+
+        break;
+    case 7: // 2 Spawns, 50 Extensions (100 capacity), Ramparts (100M max hits), 3 Towers, 4 Links, 6 Labs, Factory
+
+        break;
+    case 8: // 	3 Spawns, 60 Extensions (200 capacity), Ramparts (300M max hits), 6 Towers, 6 Links, 10 Labs, Observer, Power Spawn, Nuker
+
+        break;
+    default:
+        break;
+}

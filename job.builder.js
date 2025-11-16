@@ -1,39 +1,37 @@
-var job_Builder = {
+const { writeLog, LOG_TYPE } = require("./handler.logging");
 
-    /** @param {Creep} creep **/
-    run: function(creep, currentTier) {
-        switch (currentTier) {
-            case 0: // Roads, 5 Containers
-                
-                break;
-            case 1: // 1 Spawn
+// Description of function
+/**
+ * @param {string} creep - Name of room to spawn creeps for
+ */
+function performBuilder (creep) {
+    // Get room index, data, and queue from memory
+    let roomIndex = Memory.rooms.findIndex(room => room.roomName === roomName);
+    let roomObject = Memory.rooms[roomIndex];
+    let queue = roomObject.roomData.queues.creepQueue;
 
-                break;
-            case 2: // 5 Extensions (50 capacity), Ramparts (300K max hits), Walls
+    // What if a creep dies while building something?
+        // Should a check be added when they are removed from memory?
+        // Then remove the creep from the project, making it abandoned
 
-                break;
-            case 3: // 10 Extensions (50 capacity), Ramparts (1M max hits), 1 Tower
-
-                break;
-            case 4: // 20 Extensions (50 capacity), Ramparts (3M max hits), Storage
-
-                break;
-            case 5: // 30 Extensions (50 capacity), Ramparts (10M max hits), 2 Towers, Storage, 2 Links
-
-                break;
-            case 6: // 40 Extensions (50 capacity), Ramparts (30M max hits), 3 Links, Extractor, 3 Labs, Terminal
-
-                break;
-            case 7: // 2 Spawns, 50 Extensions (100 capacity), Ramparts (100M max hits), 3 Towers, 4 Links, 6 Labs, Factory
-
-                break;
-            case 8: // 	3 Spawns, 60 Extensions (200 capacity), Ramparts (300M max hits), 6 Towers, 6 Links, 10 Labs, Observer, Power Spawn, Nuker
-
-                break;
-            default:
-                break;
-        }
-    }
+    /** Builder Workflow
+     * 1) Check to see creep already has an assignment
+     * 1a) If already assigned, continue that assignment (get energy if empty & site energy = 0, move to site, build at site)
+     * 1b) If not already assigned, get new assignment
+     * 2) Check for any abandoned projects (un-assigned construction sites)
+     * 2a) If there is an abandoned project, assign to project
+     * 2b) If there are no abandoned projects, check queue
+     * 3) Check queue for priority assignments
+     * 3a) If there is something in the queue, start new project
+     * 4) Start new project from queue
+     * 4a) Check any logic associated with building type (reserve 1 container for upgrading)
+     * 4b) Determine location for construction site
+     * 4c) Create construction site
+     * 4d) Assign creep to project
+     * 4e) Continue regular logic from 1a
+     */
 }
 
-module.exports = job_Builder;
+module.exports = {
+    spawnCreeps
+};
