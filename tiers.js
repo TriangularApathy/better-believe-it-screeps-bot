@@ -97,6 +97,11 @@ const tierList = [
                 buildingName: 'Rampart',
                 qtyMax: undefined,
                 importance: 0.4
+            },
+            {
+                buildingName: 'Road',
+                qtyMax: undefined,
+                importance: 0.6
             }
         ]
     }
